@@ -12,7 +12,23 @@ class Store {
     }
     
     public function set_name($name){
-        this->name = $name;
+        $this->name = $name;
     }
     
+}
+
+function list_stores(){
+    global $database;
+    
+    
+    $query = 'SELECT id, name, created_at FROM stores';
+    
+    $statement = $database->prepare($query);
+    $statement->execute();
+    
+    $stores = $statement->fetchAll();
+    
+    $statement->closeCursor();
+    
+    return $stores;
 }

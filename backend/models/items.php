@@ -7,23 +7,23 @@ class Item {
         $this->set_storeid($store_id);
         $this->set_name($name);
         $this->set_qty($quantity);
-        this->set_checked($checked);
+        $this->set_checked($checked);
     }
     
     public function set_storeid($store_id){
-        this->store_id = $store_id;
+        $this->store_id = $store_id;
     }
     
     public function set_name($name){
-        this->name = $name;
+        $this->name = $name;
     }
     
     public function set_qty($qty){
-        this->quantity = $qty;
+        $this->quantity = $qty;
     }
     
     public function set_checked($checked){
-        this->checked = $checked;
+        $this->checked = $checked;
     }
     
     public function get_storeid(){
@@ -42,4 +42,19 @@ class Item {
         return $this->checked;
     }
     
+}
+
+function list_items(){
+    global $database;
+    
+    $query = 'SELECT id, name, store_id FROM items';
+    
+    $statement = $database->prepare($query);
+    $statement->execute();
+    
+    $items = $statement->fetchAll();
+    
+    $statement->closeCursor();
+    
+    return $items;
 }
