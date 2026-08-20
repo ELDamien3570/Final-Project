@@ -75,3 +75,17 @@ function list_items_by_store($store_id){
     
     return $items; 
 }
+
+function delete_item($item_id) {
+    global $database;
+    
+    $query = 'delete from items where id = :itemID';
+    
+    $statement = $database->prepare($query);
+    $statement->bindValue(":itemID", $item_id);
+    
+    $statement->execute();
+    
+    $statement->closeCursor();
+}
+

@@ -15,7 +15,7 @@ function App() {
   const [loadingStores, setLoadingStores] = useState(true)
   const [loadingItems, setLoadingItems] = useState(true)
 
-  const [selectedStore, setSelectedStore] = useState([])
+  const [selectedStore, setSelectedStore] = useState(null)
 
   async function fetchStores() {
     try {
@@ -51,12 +51,53 @@ function App() {
 
       const itemData = await response.json()
 
+      
       setItems(itemData)
       setLoadingItems(false)
     }
     catch (requestError) {
       setItemError(requestError.message)
       setLoadingItems(false)
+    }
+  }
+
+  async function deleteStoreById(storeID) {
+    try {
+      const response = await fetch(`${STORES_API}/${storeID}`, {method: 'DELETE'})
+      
+      if (!response.ok) {
+        throw new Error('Could not delete store')
+      }
+      
+      const confirmationMessage = await response.json()
+      alert(confirmationMessage.message)
+
+      fetchStores()
+      fetchItems()
+      setSelectedStore(null)
+    }
+    catch (requestError) {
+      setStoreError(requestError.message)
+    }
+  }
+
+  async function deleteItemById(itemID){
+    try {
+      const response = await fetch(`${ITEMS_API}/${itemID}`, {method: 'DELETE'})
+      
+      if (!response.ok) {
+        throw new Error('Could not delete store')
+      }
+      
+      const confirmationMessage = await response.json()
+      alert(confirmationMessage.message)
+      
+      fetchStores()
+      fetchItems()
+      setSelectedStore(null)
+    }
+    catch (requestError) {
+      setStoreError(requestError.message)
     }
   }
 
@@ -71,6 +112,11 @@ function App() {
     fetchItemsByStore(storeID)
   }
 
+  function handleAllItemsClick() {
+    fetchItems()
+    setSelectedStore(null)
+  }
+
   let storeButtons
 
   if (loadingStores) {
@@ -82,9 +128,16 @@ function App() {
   else {
     storeButtons = (
       <ul>
+        <li>
+          <button className={selectedStore === null ? 'store-button is-selected' : 'store-button'} onClick={() => handleAllItemsClick()}>See All Items   
+          </button>
+        </li>
         {stores.map((store) => (
-          <li key={store.id}><button className={selectedStore === store.id ? 'store-button is-selected' : 'store-button'} onClick={() => handleStoreClick(store.id)}>Name: {store.name} | ID: {store.id}
-          </button></li>
+          <li key={store.id}><button className={selectedStore === store.id ? 'store-button is-selected' : 'store-button'} onClick={() => handleStoreClick(store.id)}>Name: {store.name} | ID: {store.id}   
+          </button>
+          <button onClick={() => deleteStoreById(store.id)}>Delete Store</button>
+          </li>
+
         ))}
       </ul>
     )
@@ -103,7 +156,9 @@ function App() {
       itemButtons = (
         <ul>
           {items.map((item) => (
-            <li key={item.id}>Item Name: {item.name} | Store ID: {item.store_id} </li>
+            <li key={item.id}>Item Name: {item.name} | Store ID: {item.store_id} 
+            <button onClick={() => deleteItemById(item.id)}>Delete Item</button>
+            </li>      
           ))}
         </ul>
       )
@@ -116,7 +171,6 @@ function App() {
       )
     }
   }
-
 
   return (
     <div className="App">

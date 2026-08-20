@@ -32,3 +32,16 @@ function list_stores(){
     
     return $stores;
 }
+
+function delete_store($store_id) {
+    global $database;
+    
+    $query = 'delete from stores where id = :storeID';
+    
+    $statement = $database->prepare($query);
+    $statement->bindValue(":storeID", $store_id);
+    
+    $statement->execute();
+    
+    $statement->closeCursor();
+}
