@@ -58,3 +58,20 @@ function list_items(){
     
     return $items;
 }
+
+function list_items_by_store($store_id){
+    global $database;
+    
+    $query = 'SELECT id, name, store_id FROM items WHERE store_id = :storeID';
+    
+    $statement = $database->prepare($query);
+    $statement->bindValue(":storeID", $store_id);
+    
+    $statement->execute();
+    
+    $items = $statement->fetchAll();
+    
+    $statement->closeCursor();
+    
+    return $items; 
+}
