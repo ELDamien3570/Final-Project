@@ -1,7 +1,7 @@
 <?php
 
     header('Access-Control-Allow-Origin: *');
-    header('Access-Control-Allow-Methods: GET, DELETE');
+    header('Access-Control-Allow-Methods: GET, DELETE, POST, PUT');
     
     
     require_once 'models/database.php';
@@ -24,7 +24,6 @@
     }
     elseif ($method == 'GET' 
             && count($path_parts) == 6
-            && $path_parts[2] == 'api'
             && $path_parts[3] == 'stores'
             && is_numeric($path_parts[4])
             && $path_parts[5] == 'items')
@@ -36,7 +35,6 @@
     }
     elseif ($method == 'DELETE'
             && count($path_parts) == 5
-            && $path_parts[2] == 'api'
             && $path_parts[3] == 'stores'
             && is_numeric($path_parts[4]))
     {
@@ -47,13 +45,53 @@
             "message" => "Store {$path_parts[4]} Deleted"
         ]);
     }
+    elseif($method == 'POST' && $path == '/FinalProject/api/stores')
+    {
+        $body = file_get_contents('php://input');
+        $data = json_decode($body, true);
+        
+        create_store($data['name']);
+        
+        echo json_encode([
+            "message" => "Store {$data['name']} added to database"
+        ]);
+    }
+    elseif($method == 'POST' 
+            && count($path_parts) == 6
+            && $path_parts[3] == 'stores'
+            && is_numeric($path_parts[4])
+            && $path_parts[5] == 'items')
+    {
+        $body = file_get_contents('php://input');
+        $data = json_decode($body, true);
+        
+        create_item($data['name'], $data['quantity'], $path_parts[4]);
+        
+        echo json_encode([
+           "message" => "Item {$data['name']} added to database" 
+        ]);
+    }
+    elseif($method == 'PUT' 
+            && $path_parts[3] == 'items'
+            && is_numeric($path_parts[4]))
+    {
+        $body = file_get_contents('php://input');
+        $data = json_decode($body, true);
+        
+        update_item($path_parts[4], $data['checked']);
+        
+        echo json_encode([
+           "message" => "Item {$path_parts[4]} has been updated" 
+        ]);
+    }
     elseif ($method == 'DELETE'
             && count($path_parts) == 5
-            && $path_parts[2] == 'api'
             && $path_parts[3] == 'items'
             && is_numeric($path_parts[4]))
     {
         $item_id = $path_parts[4];
+        
+
         delete_item($item_id);
         
         echo json_encode([

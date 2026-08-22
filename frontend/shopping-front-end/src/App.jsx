@@ -101,6 +101,72 @@ function App() {
     }
   }
 
+  async function insertStore(storeName){
+    try {
+      const response = await fetch(STORES_API, {method: 'POST', body: JSON.stringify({name: storeName})})
+      
+      if (!response.ok){
+        throw new Error('Could not add store')
+      }
+      
+      const confirmationMessage = await response.json()
+      alert(confirmationMessage.message)
+
+      fetchStores()
+      fetchItems()
+      setSelectedStore(null)
+    }
+    catch (requestError) {
+      alert(requestError.message)
+    }
+  }
+
+  async function insertItem(itemName, storeID, qty){
+    try {
+      const response = await fetch(`${STORES_API}/${storeID}/items`, {method: 'POST', body: JSON.stringify({name: itemName, quantity: qty})})
+      
+      if (!response.ok){
+        throw new Error('Could not add item')
+      }
+      
+      const confirmationMessage = await response.json()
+      alert(confirmationMessage.message)
+
+      fetchStores()
+      fetchItems()
+      setSelectedStore(null)
+    }
+    catch (requestError) {
+      alert(requestError.message)
+    }
+  }
+
+  async function updateItem(itemID, checked){
+    try {
+      const response = await fetch(`${ITEMS_API}/${itemID}`, {method: 'PUT', body: JSON.stringify({checked: checked})})
+
+      if (!response.ok){
+        throw new Error('Could not update item')
+      }
+
+      const confirmationMessage = await response.json()
+      alert(confirmationMessage.message)
+
+      if (selectedStore === null){
+        fetchItems()
+      }
+      else 
+      {
+        fetchItemsByStore(selectedStore)
+      }
+
+    }
+    catch (requestError) {
+      alert(requestError.message)
+    }
+  }
+
+
   useEffect(() => {
   
     fetchStores()
@@ -117,6 +183,25 @@ function App() {
     setSelectedStore(null)
   }
 
+  function handleAddItemsClick() {
+    if (selectedStore === null) {
+      alert('Select a store to add an item')
+      return
+    }
+
+    const itemName = prompt('Item Name: ')
+    const quantity = prompt('Item quantity: ')
+
+    insertItem(itemName, selectedStore, Number(quantity))
+
+  }
+
+  function handleAddStoresClick()
+  {
+    const storeName = prompt('Store Name: ')
+    insertStore(storeName)
+  }
+
   let storeButtons
 
   if (loadingStores) {
@@ -129,15 +214,16 @@ function App() {
     storeButtons = (
       <ul>
         <li>
-          <button className={selectedStore === null ? 'store-button is-selected' : 'store-button'} onClick={() => handleAllItemsClick()}>See All Items   
-          </button>
+          <button className={selectedStore === null ? 'store-button is-selected' : 'store-button'} onClick={() => handleAllItemsClick()}>See All Items</button>
+        </li>
+        <li>
+          <button onClick={handleAddStoresClick}>Add Stores</button>
         </li>
         {stores.map((store) => (
-          <li key={store.id}><button className={selectedStore === store.id ? 'store-button is-selected' : 'store-button'} onClick={() => handleStoreClick(store.id)}>Name: {store.name} | ID: {store.id}   
-          </button>
+          <li key={store.id}>
+          <button className={selectedStore === store.id ? 'store-button is-selected' : 'store-button'} onClick={() => handleStoreClick(store.id)}>Name: {store.name} | ID: {store.id} </button>
           <button onClick={() => deleteStoreById(store.id)}>Delete Store</button>
           </li>
-
         ))}
       </ul>
     )
@@ -158,8 +244,11 @@ function App() {
           {items.map((item) => (
             <li key={item.id}>Item Name: {item.name} | Store ID: {item.store_id} 
             <button onClick={() => deleteItemById(item.id)}>Delete Item</button>
+            <label>Checked?</label>
+            <input type="checkbox" checked={Number(item.checked) === 1} onChange={(e) => updateItem(item.id, e.target.checked ? 1 : 0)}/>
             </li>      
           ))}
+          
         </ul>
       )
     }
@@ -169,13 +258,24 @@ function App() {
           Store is empty
         </p>
       )
-    }
+    }  
   }
+
+  let addItemButton
+
+  if (selectedStore != null){
+    addItemButton = (
+      <button onClick={handleAddItemsClick}>Add Item</button>
+    )
+  }
+
+
 
   return (
     <div className="App">
       {storeButtons}
       {itemButtons}
+      {addItemButton}
     </div>
   )
 }

@@ -45,3 +45,16 @@ function delete_store($store_id) {
     
     $statement->closeCursor();
 }
+
+function create_store($store_name) {
+    global $database;
+    
+    $query = "INSERT INTO stores (name) VALUES (:name)";
+    
+    $statement = $database->prepare($query);
+    $statement->bindValue(":name", $store_name);
+    
+    $statement->execute();
+    
+    $statement->closeCursor();
+}
