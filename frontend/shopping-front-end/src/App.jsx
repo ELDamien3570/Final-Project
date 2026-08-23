@@ -1,5 +1,7 @@
 import { useState, useEffect, StrictMode } from 'react'
 import './App.css'
+import StoresList from './components/StoresLIst'
+import ItemsList from './components/ItemsList'
 
 const STORES_API = 'http://localhost/FinalProject/api/stores'
 const ITEMS_API = 'http://localhost/FinalProject/api/items'
@@ -165,13 +167,6 @@ function App() {
       alert(requestError.message)
     }
   }
-
-
-  useEffect(() => {
-  
-    fetchStores()
-    fetchItems()
-  }, []);
   
   function handleStoreClick(storeID) {
     setSelectedStore(storeID)
@@ -202,80 +197,37 @@ function App() {
     insertStore(storeName)
   }
 
-  let storeButtons
-
-  if (loadingStores) {
-    storeButtons = <p>Loading Stores...</p>
-  } 
-  else if (storeError) {
-    storeButtons = <p>{storeError}</p>
-  }
-  else {
-    storeButtons = (
-      <ul>
-        <li>
-          <button className={selectedStore === null ? 'store-button is-selected' : 'store-button'} onClick={() => handleAllItemsClick()}>See All Items</button>
-        </li>
-        <li>
-          <button onClick={handleAddStoresClick}>Add Stores</button>
-        </li>
-        {stores.map((store) => (
-          <li key={store.id}>
-          <button className={selectedStore === store.id ? 'store-button is-selected' : 'store-button'} onClick={() => handleStoreClick(store.id)}>Name: {store.name} | ID: {store.id} </button>
-          <button onClick={() => deleteStoreById(store.id)}>Delete Store</button>
-          </li>
-        ))}
-      </ul>
-    )
-  }
-
-  let itemButtons
-
-  if (loadingItems) {
-    itemButtons = <p>Loading items</p>
-  }
-  else if (itemError) {
-    itemButtons = <p>{itemError}</p>
-  }
-  else {
-    if (items.length > 0) {
-      itemButtons = (
-        <ul>
-          {items.map((item) => (
-            <li key={item.id}>Item Name: {item.name} | Store ID: {item.store_id} 
-            <button onClick={() => deleteItemById(item.id)}>Delete Item</button>
-            <label>Checked?</label>
-            <input type="checkbox" checked={Number(item.checked) === 1} onChange={(e) => updateItem(item.id, e.target.checked ? 1 : 0)}/>
-            </li>      
-          ))}
-          
-        </ul>
-      )
-    }
-    else {
-      itemButtons = (
-        <p>
-          Store is empty
-        </p>
-      )
-    }  
-  }
-
-  let addItemButton
-
-  if (selectedStore != null){
-    addItemButton = (
-      <button onClick={handleAddItemsClick}>Add Item</button>
-    )
-  }
-
-
+  useEffect(() => {
+  
+    fetchStores()
+    fetchItems()
+  }, []);
 
   return (
     <div className="App">
-      {storeButtons}
-      {itemButtons}
-      {addItemButton}
+      <header className="App-Header">Shopping List</header>
+
+      <StoresList
+        _stores={stores}
+        _selectedStore={selectedStore}
+        _loadingStores={loadingStores}
+        _storeError={storeError}
+        _handleAddStoresClick={handleAddStoresClick}
+        _handleAllItemsClick={handleAllItemsClick}
+        _handleStoreClick={handleStoreClick}
+        _deleteStoreById={deleteStoreById}
+      />
+
+      <ItemsList
+        _loadingItems={loadingItems}
+        _itemError={itemError}
+        _items={items}
+        _deleteItemByID={deleteItemById}
+        _updateItem={updateItem}
+        _handleAddItemsClick={handleAddItemsClick}
+        _selectedStore={selectedStore}
+      />
+      
     </div>
   )
 }
