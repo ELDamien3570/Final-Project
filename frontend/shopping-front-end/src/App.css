@@ -4,6 +4,7 @@
   border-color: black;
   border-radius: 5%;
   border-style: inset;
+  padding: 10px 100px;
 }
 
 .store-button:hover {
@@ -13,3 +14,18 @@
 .store-button.is-selected {
   background-color: green;
 }
+
+.delete-button {
+  background-color: red;
+  margin-left: 10px;
+}
+
+.delete-button:hover {
+  border-color: rgb(90, 5, 5);
+}
+
+.delete-button.store {
+  margin-left: 0px;
+  padding: 8px 12px;
+}
+

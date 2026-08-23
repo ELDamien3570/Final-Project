@@ -17,20 +17,21 @@ export default function StoresList({
     }
 
     return (
-        <ul>
-            <li>
-            <button className={_selectedStore === null ? 'store-button is-selected' : 'store-button'} onClick={() => _handleAllItemsClick()}>See All Items</button>
-            </li>
-            <li>
-            <button onClick={_handleAddStoresClick}>Add Stores</button>
-            </li>
-            {_stores.map((store) => (
-            <li key={store.id}>
-            <button className={_selectedStore === store.id ? 'store-button is-selected' : 'store-button'} onClick={() => _handleStoreClick(store.id)}>Name: {store.name} | ID: {store.id} </button>
-            <button onClick={() => _deleteStoreById(store.id)}>Delete Store</button>
-            </li>
-            ))}
-        </ul>
+        <p>
+            <body>
+                <button className={_selectedStore === null ? 'store-button is-selected' : 'store-button'} onClick={() => _handleAllItemsClick()}>See All Items</button>
+                <button className="store-button" onClick={_handleAddStoresClick}>Add Stores</button>
+            </body>
+            <nav>
+                {_stores.map((store) => (
+                    <li className="store-list-item" key={store.id}>
+                        <button className={_selectedStore === store.id ? "store-button is-selected" : "store-button"} onClick={() => _handleStoreClick(store.id)}>Name: {store.name} | ID: {store.id} </button>
+                        <button className="delete-button store" onClick={() => _deleteStoreById(store.id)}><b>X</b></button>
+                    </li>
+                ))}
+            </nav>
+        </p>
+        
     )
-    
+
 }

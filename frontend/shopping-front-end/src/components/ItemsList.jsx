@@ -11,7 +11,7 @@ export default function ItemsList({
     const addItemButton = () => {
         if (_selectedStore != null){
             return (
-            <button onClick={_handleAddItemsClick}>Add Item NEW</button>
+                <button className="add-item-button" onClick={_handleAddItemsClick}>Add Item</button>
             )
         }
     }
@@ -23,21 +23,22 @@ export default function ItemsList({
         return <p>{_itemError}</p>
     }
     else if (_items.length === 0){
-        return <p>You haven't added items to this store's list!</p>
+        return <p>You haven't added items to this store's list! {addItemButton()} </p> 
     }
 
     return (
-        <ul>
+        <nav>
             {_items.map((item) => (
-                <li key={item.id}>Item Name: {item.name} | Quantity: {item.quantity} 
-                <button onClick={() => _deleteItemById(item.id)}>Delete Item</button>
-                <label>Checked?</label>
-                <input type="checkbox" checked={Number(item.checked) === 1} onChange={(e) => _updateItem(item.id, e.target.checked ? 1 : 0)}/>
-                
+                <li key={item.id}>
+                    <h3>
+                    <input className="checked-box" type="checkbox" checked={Number(item.checked) === 1} onChange={(e) => _updateItem(item.id, e.target.checked ? 1 : 0)}/>
+                    <b>{item.name}</b> | Quantity: {item.quantity}             
+                    <button className="delete-button" onClick={() => _deleteItemById(item.id)}><b>X</b></button>
+                    </h3>   
                 </li>      
             ))}
             {addItemButton()}
-        </ul>
+        </nav>
     )
 
 

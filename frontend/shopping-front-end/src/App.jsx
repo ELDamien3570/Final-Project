@@ -1,6 +1,6 @@
 import { useState, useEffect, StrictMode } from 'react'
 import './App.css'
-import StoresList from './components/StoresLIst'
+import StoresList from './components/StoresList'
 import ItemsList from './components/ItemsList'
 
 const STORES_API = 'http://localhost/FinalProject/api/stores'
@@ -227,7 +227,7 @@ function App() {
         _handleAddItemsClick={handleAddItemsClick}
         _selectedStore={selectedStore}
       />
-      
+
     </div>
   )
 }
