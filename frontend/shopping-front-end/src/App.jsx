@@ -94,9 +94,15 @@ function App() {
       const confirmationMessage = await response.json()
       alert(confirmationMessage.message)
       
-      fetchStores()
-      fetchItems()
-      setSelectedStore(null)
+      if (selectedStore === null){
+        fetchItems()
+        fetchStores()
+      }
+      else 
+      {
+        fetchItemsByStore(selectedStore)
+        fetchStores()
+      }
     }
     catch (requestError) {
       setStoreError(requestError.message)
@@ -108,7 +114,7 @@ function App() {
       const response = await fetch(STORES_API, {method: 'POST', body: JSON.stringify({name: storeName})})
       
       if (!response.ok){
-        throw new Error('Could not add store')
+        throw new Error("Could not add store")
       }
       
       const confirmationMessage = await response.json()
@@ -128,15 +134,20 @@ function App() {
       const response = await fetch(`${STORES_API}/${storeID}/items`, {method: 'POST', body: JSON.stringify({name: itemName, quantity: qty})})
       
       if (!response.ok){
-        throw new Error('Could not add item')
+        throw new Error("Could not add item")
       }
       
       const confirmationMessage = await response.json()
       alert(confirmationMessage.message)
 
-      fetchStores()
-      fetchItems()
-      setSelectedStore(null)
+
+      if (selectedStore === null){
+        fetchItems()
+      }
+      else 
+      {
+        fetchItemsByStore(selectedStore)
+      }
     }
     catch (requestError) {
       alert(requestError.message)
@@ -148,7 +159,7 @@ function App() {
       const response = await fetch(`${ITEMS_API}/${itemID}`, {method: 'PUT', body: JSON.stringify({checked: checked})})
 
       if (!response.ok){
-        throw new Error('Could not update item')
+        throw new Error("Could not update item")
       }
 
       const confirmationMessage = await response.json()
@@ -180,21 +191,41 @@ function App() {
 
   function handleAddItemsClick() {
     if (selectedStore === null) {
-      alert('Select a store to add an item')
+      alert("Select a store to add an item")
       return
     }
 
-    const itemName = prompt('Item Name: ')
-    const quantity = prompt('Item quantity: ')
+    const itemName = prompt("Item Name: ")
+    const quantity = prompt("Item quantity: ")
 
-    insertItem(itemName, selectedStore, Number(quantity))
+    if (itemName === null || itemName.length === 0 || quantity === 0 || quantity === null || isNaN(quantity))
+    {
+      if (itemName === null || itemName.length === 0)
+      {
+        alert("You must enter an item name")
+        return
+      }
+      if (quantity === 0 || quantity === null || isNaN(quantity))
+      {
+        alert("You must enter a quantity greater than 0")
+        return
+      }
+    }
 
+    insertItem(itemName, selectedStore, quantity)
   }
 
   function handleAddStoresClick()
   {
-    const storeName = prompt('Store Name: ')
-    insertStore(storeName)
+    const storeName = prompt("Store Name: ")
+    
+    if (storeName === null || storeName.length === 0)
+    {
+      alert("You must enter a store name")
+      return
+    }
+
+    insertStore(storeName)  
   }
 
   useEffect(() => {
@@ -205,7 +236,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-Header">Shopping List</header>
+      <header className="app-header"><h1>Shopping List</h1></header>
 
       <StoresList
         _stores={stores}
@@ -222,10 +253,11 @@ function App() {
         _loadingItems={loadingItems}
         _itemError={itemError}
         _items={items}
-        _deleteItemByID={deleteItemById}
+        _deleteItemById={deleteItemById}
         _updateItem={updateItem}
         _handleAddItemsClick={handleAddItemsClick}
         _selectedStore={selectedStore}
+        _stores={stores}
       />
 
     </div>

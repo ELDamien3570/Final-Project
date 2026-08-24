@@ -2,7 +2,6 @@
 function list_stores(){
     global $database;
     
-    
     $query = 'SELECT id, name, created_at FROM stores';
     
     $statement = $database->prepare($query);
